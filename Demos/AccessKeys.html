@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<head>
+  <title>Editor demo</title>
+  <script type="text/javascript" src="scripts/jquery-1.6.2.min.js"></script>
+  <script type="text/javascript" src="scripts/jquery.markdown-0.2.js"></script>
+  <script type="text/javascript" src="scripts/jquery.hotkeys.js"></script>
+  <script type="text/javascript" src="../Source/textselector.js"></script>
+  <script type="text/javascript" src="../Source/jquery.griffin.editor.js"></script>
+  <script type="text/javascript" src="../Source/jquery.griffin.editor.markdown.js"></script>
+  <link rel="stylesheet" href="Styles/jquery-ui-1.8.16.custom.css">
+  <style type="text/css">
+   .editor .area { width: 600px; height: 200px; }
+   .editor .toolbar { padding: 0px;  }
+ </style>
+</head>
+<body>
+<!--
+
+Uses CTRL+Key for easier access
+
+1. Add the script jquery.hotkeys
+
+-->
+<div class="editor">
+	<div class="toolbar">
+		<span class="button-h1" accesskey="1" title="Heading 1"><img src="../Source/images/h1.png" /></span>
+		<span class="button-h2" accesskey="2" title="Heading 2"><img src="../Source/images/h2.png" /></span>
+		<span class="button-h3" accesskey="3" title="Heading 3"><img src="../Source/images/h3.png" /></span>
+		<span class="button-bold" accesskey="b" title="Bold text"><img src="../Source/images/bold.png" /></span>
+		<span class="button-italic" accesskey="i" title="Italic text"><img src="../Source/images/italic.png" /></span>
+		<span class="divider">&nbsp;</span>
+		<span class="button-bullets" accesskey="l" title="Bullet List"><img src="../Source/images/bullets.png" /></span>
+		<span class="button-numbers" accesskey="n" title="Ordered list"><img src="../Source/images/numbers.png" /></span>
+		<span class="divider">&nbsp;</span>
+		<span class="button-sourcecode" accesskey="k" title="Source code"><img src="../Source/images/source_code.png" /></span>
+		<span class="button-quote" accesskey="q" title="Qoutation"><img src="../Source/images/document_quote.png" /></span>
+		<span class="divider">&nbsp;</span>
+		<span class="button-link" accesskey="l" title="Insert link"><img src="../Source/images/link.png" /></span>
+		<span class="button-image" accesskey="p" title="Insert picture/image"><img src="../Source/images/picture.png" /></span>
+	</div>
+	<textarea class="area">Hello world</textarea>
+</div>
+<script type="text/javascript">
+	$(function(){
+		$('.editor').griffinEditor();
+	});
+</script>
+</body>
+</html>
