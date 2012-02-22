@@ -102,7 +102,7 @@ String.prototype.capitalize = function(){
 				this.assignAccessKeys = function() {
 					$('span[accesskey]', data.toolbar).each(function() {
 						var button = this;
-						if (jQuery().pluginName) {
+						if (jQuery.hotkeys) {
 							$(data.editor).bind('keydown', 'ctrl+' + $(this).attr('accesskey'), function(e) {
 								e.preventDefault();
 								
