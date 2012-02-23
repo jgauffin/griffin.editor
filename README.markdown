@@ -3,6 +3,7 @@ griffin.editor
 
 A jQuery textarea editor that has zero configuration. For instance, just add the syntax highlighter scripts to activate those features.
 
+The scripts have been LINTed at jshint.com
 
 
 Current features
