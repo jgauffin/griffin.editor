@@ -12,6 +12,8 @@
  
  */
 (function($) {
+    "use strict";
+    
 	$.griffinEditorExtension.imageDialog = function(options) {
 		var body = $('#griffin-editor-image-dialog');
 		if (typeof $body === 'undefined') {
@@ -28,12 +30,12 @@
 		
 		var $title = $('input[name="title"]');
 		var $url = $('input[name="url"]');
-		if (options.title != null && typeof options.title !== 'undefined') {
+		if (options.title !== null && typeof options.title !== 'undefined') {
 			$title.val(options.title);
 		}
 		
 		
-		if (options.url != null && typeof options.url !== 'undefined') {
+		if (options.url !== null && typeof options.url !== 'undefined') {
 			$url.val(options.url);
 		}
 		var valid = true;
@@ -79,7 +81,7 @@
 		};
 		
 		$body.dialog(dialogOptions);
-	}
+	};
 	
 	$.griffinEditorExtension.linkDialog = function(options) {
 		var body = $('#griffin-editor-link-dialog');
@@ -96,15 +98,15 @@
 		var $body = $(body);
 		
 		var $title = $('input[name="title"]');
-		var $url = $('input[name="url"]');
-		if (options.title != null && typeof options.title !== 'undefined') {
+		if (options.title !== null && typeof options.title !== 'undefined') {
 			$title.val(options.title);
 		}
 		
-		
-		if (options.url != null && typeof options.url !== 'undefined') {
+		var $url = $('input[name="url"]');
+		if (options.url !== null && typeof options.url !== 'undefined') {
 			$url.val(options.url);
 		}
+        
 		var valid = true;
 		var dialogOptions = {
 			autoOpen: true,
@@ -148,5 +150,5 @@
 		};
 		
 		$body.dialog(dialogOptions);
-	}
+	};
 })(jQuery);	

@@ -13,6 +13,8 @@
  */
 
 (function($) {
+    "use strict";
+    
 	$.griffinEditorExtension.textHandler = {
 		invokeAction: function($editor, actionName, selection, context) {
 	//			console.log(griffinEditor);
@@ -25,15 +27,19 @@
 				args[1] = context;
 				return this[method].apply(this, args);
 			} else {
-				alert('Missing ' + method + ' in the active textHandler (griffinEditorExtension)');
+                if (typeof alert !== 'undefined') {
+                    alert('Missing ' + method + ' in the active textHandler (griffinEditorExtension)');
+                }
 			}
 			
 			return this;
 		},
 		
 		preview: function($editor, $preview, contents) {
-			if (contents == null || typeof contents === 'undefined') {
-				alert('Empty contents');
+			if (contents === null || typeof contents === 'undefined') {
+                if (typeof alert !== 'undefined') {
+                    alert('Empty contents');
+                }
 				return this;
 			}
 			$preview.html($.markdown(contents));
@@ -46,7 +52,7 @@
 			var pos = selection.get();
 			
 			// expand double click
-			if (pos.start != 0 && $editor.val().substr(pos.start - wrapperLength, wrapperLength) === wrapperString) {
+			if (pos.start !== 0 && $editor.val().substr(pos.start - wrapperLength, wrapperLength) === wrapperString) {
 				selection.select(pos.start - wrapperLength, pos.end + wrapperLength);
 				pos = selection.get();
 			}
@@ -109,9 +115,8 @@
 			
 			if (isSelected) {
 				selection.select(pos.end + 2, pos.end + 2);
-			} else {
 			}
-			
+            
 			return this;
 		},
 		
@@ -214,6 +219,8 @@
 			};
 			
 			if (!selection.isSelected()) {
+                options.url = '';
+                options.title = '';
 			} else if (text.substr(-4, 4) === '.png' || text.substr(-4, 4) === '.gif' || text.substr(-4, 4) === '.jpg') {
 				options.url = text;
 			} else {
@@ -239,12 +246,13 @@
 					context.editor.preview();
 				}
 			};			
-			if (!selection.isSelected()) {
-			} else if (text.substr(0,4) === 'http' || text.substr(0,3) === 'www') {
-				options.url = text;
-			} else {
-				options.title = text;
-			}
+			if (selection.isSelected()) {
+                if (text.substr(0,4) === 'http' || text.substr(0,3) === 'www') {
+                    options.url = text;
+                } else {
+                    options.title = text;
+                }
+			} 
 			
 			$.griffinEditorExtension.linkDialog(options);
 			return this;
