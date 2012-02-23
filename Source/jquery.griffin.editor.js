@@ -91,77 +91,6 @@ String.prototype.capitalize = function(){
                 var self = this;
                 var data = $this.data('griffin-editor');
                 
-				
-				this.trimSpaceInSelection = function () {
-					var selectedText = data.selection.text();
-					var pos = data.selection.get();
-					if (selectedText.substr(selectedText.length - 1, 1) === ' ') {
-						data.selection.select(pos.start, pos.end - 1);
-					}
-				};
-				
-				this.getActionNameFromClass = function(classString) {
-					var classNames = classString.split(/\s+/);
-					for (var i = 0; i < classNames.length; i++) {
-						if (classNames[i].substr(0, 7) === 'button-') {
-							return classNames[i].substr(7);
-						}
-					}
-					
-					return null;
-				}
-				
-				this.assignAccessKeys = function() {
-					$('span[accesskey]', data.toolbar).each(function() {
-						var button = this;
-						if (jQuery().pluginName) {
-							$(data.editor).bind('keydown', 'ctrl+' + $(this).attr('accesskey'), function(e) {
-								e.preventDefault();
-								
-								var actionName = self.getActionNameFromClass(button.className);
-								var args = [];
-								args[0] = actionName;
-								methods.invokeAction.apply(self, args); 
-								self.preview();
-								return this;
-							});
-						
-							$(this).attr('title', $(this).attr('title') + ' [CTRL+' + $(this).attr('accesskey').toUpperCase() + ']');
-						} 
-					});
-				}
-				
-				this.preview = function() {
-					if ($('#myeditor-preview').length === 0)
-						return this;
-					data.options.textHandler.preview(self, $('#myeditor-preview'), data.editor.val());
-					
-					// no code highlighter.
-					if (typeof hljs === 'undefined')
-						return this;
-						
-					var timer = $(this).data('editor-timer');
-					if (typeof timer !== 'undefined') {
-						clearTimeout(timer);
-					}
-					timer = setTimeout(function() {
-						
-						hljs.tabReplace = '    ';
-						var text = $("#myeditor-preview code").html();
-						if (text == null) {
-							return;
-						}
-						var result = hljs.highlightAuto(text);
-						$("#myeditor-preview code").html(result.value);
-					}, 1000);
-					$(this).data('editor-timer', timer);					
-				};
-				
-				this.autoSize = function () {
-					if (!data.options.autoSize)
-						return this;
-						
-					var twin = $(this).data('twin-area');
                 
                 this.trimSpaceInSelection = function () {
                     var selectedText = data.selection.text();
@@ -213,23 +142,21 @@ String.prototype.capitalize = function(){
                     if (typeof hljs === 'undefined') {
                         return this;
                     }
-                    
+                        
                     var timer = $(this).data('editor-timer');
                     if (typeof timer !== 'undefined') {
                         clearTimeout(timer);
                     }
-                    
                     timer = setTimeout(function() {
+                        
                         hljs.tabReplace = '    ';
                         var text = $("#myeditor-preview code").html();
                         if (text === null) {
                             return;
                         }
-                        
                         var result = hljs.highlightAuto(text);
                         $("#myeditor-preview code").html(result.value);
                     }, 1000);
-                    
                     $(this).data('editor-timer', timer);                    
                 };
                 
@@ -237,79 +164,8 @@ String.prototype.capitalize = function(){
                     if (!data.options.autoSize) {
                         return this;
                     }
-                    
+                        
                     var twin = $(this).data('twin-area');
-				
-				this.trimSpaceInSelection = function () {
-					var selectedText = data.selection.text();
-					var pos = data.selection.get();
-					if (selectedText.substr(selectedText.length - 1, 1) === ' ') {
-						data.selection.select(pos.start, pos.end - 1);
-					}
-				};
-				
-				this.getActionNameFromClass = function(classString) {
-					var classNames = classString.split(/\s+/);
-					for (var i = 0; i < classNames.length; i++) {
-						if (classNames[i].substr(0, 7) === 'button-') {
-							return classNames[i].substr(7);
-						}
-					}
-					
-					return null;
-				}
-				
-				this.assignAccessKeys = function() {
-					$('span[accesskey]', data.toolbar).each(function() {
-						var button = this;
-						if (jQuery.hotkeys) {
-							$(data.editor).bind('keydown', 'ctrl+' + $(this).attr('accesskey'), function(e) {
-								e.preventDefault();
-								
-								var actionName = self.getActionNameFromClass(button.className);
-								var args = [];
-								args[0] = actionName;
-								methods.invokeAction.apply(self, args); 
-								self.preview();
-								return this;
-							});
-						
-							$(this).attr('title', $(this).attr('title') + ' [CTRL+' + $(this).attr('accesskey').toUpperCase() + ']');
-						} 
-					});
-				}
-				
-				this.preview = function() {
-					if ($('#myeditor-preview').length === 0)
-						return this;
-					data.options.textHandler.preview(self, $('#myeditor-preview'), data.editor.val());
-					
-					// no code highlighter.
-					if (typeof hljs === 'undefined')
-						return this;
-						
-					var timer = $(this).data('editor-timer');
-					if (typeof timer !== 'undefined') {
-						clearTimeout(timer);
-					}
-					timer = setTimeout(function() {
-						
-						hljs.tabReplace = '    ';
-						var text = $("#myeditor-preview code").html();
-						if (text == null) {
-							return;
-						}
-						var result = hljs.highlightAuto(text);
-						$("#myeditor-preview code").html(result.value);
-					}, 1000);
-					$(this).data('editor-timer', timer);					
-				};
-				
-				this.autoSize = function () {
-					if (!data.options.autoSize)
-						return this;
-						
-					var twin = $(this).data('twin-area');
 
                     if (typeof twin === 'undefined') {
                         twin = $('<textarea style="position:absolute; top: -10000px"></textarea>');
