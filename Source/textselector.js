@@ -14,8 +14,10 @@
 
 function TextSelector(elem) {
     "use strict";
+    if (typeof elem === 'undefined')
+        throw 'Failed to find passed element';
     
-    if (this.jquery) {
+    if (elem instanceof jQuery) {
         elem = elem[0];
     }
     this.parent = elem;
@@ -25,11 +27,11 @@ function TextSelector(elem) {
       * y = end character
       * length: number of selected characters
       */
-    this.get = function() {
-        if (elem.selectionStart) {
-            return { start: elem.selectionStart, end: elem.selectionEnd, length: elem.selectionEnd-elem.selectionStart };
+    this.get = function () {
+        if (typeof elem.selectionStart !== 'undefined') {
+            return { start: elem.selectionStart, end: elem.selectionEnd, length: elem.selectionEnd - elem.selectionStart };
         }
-        
+
         /*
         elem.focus();
         var range = document.selection.createRange();
@@ -39,8 +41,8 @@ function TextSelector(elem) {
         */
         var range = document.selection.createRange();
         var stored_range = range.duplicate();
-        stored_range.moveToElementText( elem );
-        stored_range.setEndPoint( 'EndToEnd', range );
+        stored_range.moveToElementText(elem);
+        stored_range.setEndPoint('EndToEnd', range);
         var start = stored_range.text.length - range.text.length;
         var end = start + range.text.length;
 
@@ -49,7 +51,7 @@ function TextSelector(elem) {
     
     /** Replace selected text with the specified one */
     this.replace = function(newText) {
-        if (elem.selectionStart) {
+        if (typeof elem.selectionStart !== 'undefined') {
             elem.value = elem.value.substr(0, elem.selectionStart) + newText + elem.value.substr(elem.selectionEnd);
             return this;
         }
@@ -64,11 +66,11 @@ function TextSelector(elem) {
      * @param end End character
      */
     this.select = function(start, end) {
-        if (elem.setSelectionRange) {
+        if (typeof elem.setSelectionRange !== 'undefined') {
             elem.focus();
             elem.setSelectionRange(start, end);
         }
-        else if (elem.createTextRange) {
+        else if (typeof elem.createTextRange !== 'undefined') {
         
             var range = elem.createTextRange();
             range.collapse(true);
@@ -87,7 +89,7 @@ function TextSelector(elem) {
     
     /** @returns selected text */
     this.text = function() {
-        if (document.selection) {
+        if (typeof document.selection !== 'undefined') {
             //elem.focus();
             //console.log(document.selection.createRange().text);
             return document.selection.createRange().text;

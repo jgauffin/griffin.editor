@@ -90,8 +90,7 @@ String.prototype.capitalize = function(){
                 var $this = $(this);
                 var self = this;
                 var data = $this.data('griffin-editor');
-                
-                
+
                 this.trimSpaceInSelection = function () {
                     var selectedText = data.selection.text();
                     var pos = data.selection.get();
@@ -132,11 +131,11 @@ String.prototype.capitalize = function(){
                 };
                 
                 this.preview = function() {
-                    if ($('#myeditor-preview').length === 0) {
+                    if (data.preview.length === 0) {
                         return this;
                     }
                     
-                    data.options.textHandler.preview(self, $('#myeditor-preview'), data.editor.val());
+                    data.options.textHandler.preview(self, data.preview, data.editor.val());
                     
                     // no code highlighter.
                     if (typeof hljs === 'undefined') {
@@ -150,52 +149,54 @@ String.prototype.capitalize = function(){
                     timer = setTimeout(function() {
                         
                         hljs.tabReplace = '    ';
-                        var text = $("#myeditor-preview code").html();
+                        var text = $("code", data.preview).html();
                         if (text === null) {
                             return;
                         }
                         var result = hljs.highlightAuto(text);
-                        $("#myeditor-preview code").html(result.value);
+                        $('code', data.preview).html(result.value);
                     }, 1000);
-                    $(this).data('editor-timer', timer);                    
+                    $(this).data('editor-timer', timer);
+
+                    return this;
                 };
                 
                 this.autoSize = function () {
                     if (!data.options.autoSize) {
                         return this;
                     }
-                        
-                    var twin = $(this).data('twin-area');
 
+                    var twin = $(this).data('twin-area');
                     if (typeof twin === 'undefined') {
                         twin = $('<textarea style="position:absolute; top: -10000px"></textarea>');
-                        var div = $('<div  style="display:none"></div>');
                         twin.appendTo('body');
                         //div.appendTo('body');
                         $(this).data('twin-area', twin);
                         $(this).data('originalSize', { 
-                            width: this.clientWidth, 
-                            height: this.clientHeight, position: 
-                            $(this).css('position'), 
-                            top: $(this).css('top'), 
-                            left: $(this).css('left')
+                            width: data.editor[0].clientWidth, 
+                            height: data.editor[0].clientHeight, 
+                            //position: data.editor.css('position'), 
+                            top: data.editor.css('top'), 
+                            left: data.editor.css('left')
                         });
                     }
-                    twin.css('height', this.clientHeight);
-                    twin.css('width', this.clientWidth);
-                    twin.html($(this).val() + 'some\r\nmore\r\n');
+                    twin.css('height', data.editor[0].clientHeight);
+                    twin.css('width', data.editor[0].clientWidth);
+                    twin.html(data.editor.val() + 'some\r\nmore\r\n');
                     if (twin[0].clientHeight < twin[0].scrollHeight) {
                         var style = { 
-                            height: (this.clientHeight + 100) + 'px', 
-                            width: this.clientWidth, 
-                            position: 'absolute', 
-                            top: $(this).offset().top, 
-                            left: $(this).offset().left,
-                            zindex: 99
+                            height: (data.editor[0].clientHeight + 100) + 'px', 
+                            width: data.editor[0].clientWidth, 
+                            //position: 'absolute', 
+                            top: data.editor.offset().top, 
+                            left: data.editor.offset().left
+                            //zindex: 99
                         };
-                        $(this).css(style);
+                        $(data.editor).css(style);
                         $(this).data('expandedSize', style);
                     }
+
+                    return this;
                 };
                 
                 if (typeof data !== 'undefined') {
@@ -214,43 +215,45 @@ String.prototype.capitalize = function(){
                     return this;
                 });
                 
-                $('.area', this).bind('paste', function(e) {
+                $('textarea', this).bind('paste', function(e) {
                     setTimeout(function() {
                         self.preview();
                     }, 100);
                 });
                 
-                $('.area', this).keydown(function() {
+                $('textarea', this).keyup(function() {
                     self.preview();
                     self.autoSize();
                 });
                 
-                $('.area', this).blur(function() {
+                $('textarea', this).blur(function() {
                     if (data.options.autoSize) {
                         var originalSize = $(this).data('originalSize');
                         if (typeof originalSize !== 'undefined') {
-                            $(this).css(originalSize);
+                            $(data.editor).css(originalSize);
                         }
                     }
                 });
-                $('.area', this).focus(function() {
+                $('textarea', this).focus(function() {
                     if (data.options.autoSize) {
                         var expandedSize = $(this).data('expandedSize');
                         if (typeof expandedSize !== 'undefined') {
-                            $(this).css(expandedSize);
+                            $(data.editor).css(expandedSize);
                         }
                     }
                 });
-                
+
                 data = { };
                 data.toolbar = $('.toolbar', $this);
-                data.editor = $('.area', $this);
-                data.selection = new TextSelector(data.editor[0]);
+                data.editor = $('textarea', $this);
+                data.selection = new TextSelector(data.editor);
+                data.preview = $('#' + $this.attr('id') + '-preview');
                 data.options = settings;
-
                 $(this).data('griffin-editor', data);
                 this.assignAccessKeys();
                 this.preview();
+
+                return this;
             });
         },
         destroy: function( ) {
