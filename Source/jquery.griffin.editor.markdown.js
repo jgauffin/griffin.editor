@@ -209,9 +209,11 @@
 			var pos = selection.get();
 			var text = selection.text();
 			
+            selection.store();
 			var options = {
 				success: function(result) {
 					var newText = '![' + result.title + '](' + result.url + ')';
+                    selection.load();
 					selection.replace(newText);
 					selection.select(pos.start + newText.length, pos.start + newText.length);
 					context.editor.preview();
@@ -237,9 +239,10 @@
 			//[1]: http://google.com/        "Google"
 			var pos = selection.get();
 			var text = selection.text();
-			
+			selection.store();
 			var options = {
 				success: function(result) {
+                    selection.load();
 					var newText = '[' + result.title + '](' + result.url + '/)';
 					selection.replace(newText);
 					selection.select(pos.start + newText.length, pos.start + newText.length);

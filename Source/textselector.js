@@ -21,7 +21,8 @@ function TextSelector(elem) {
         elem = elem[0];
     }
     this.parent = elem;
-
+    this._stored = null;
+    
     /** @returns object {start: X, end: Y, length: Z} 
       * x = start character
       * y = end character
@@ -61,11 +62,26 @@ function TextSelector(elem) {
         return this;
     };
     
+    /** Store current selection */
+    this.store = function() {
+        this._stored = this.get();
+    };
+    
+    /** load last selection */
+    this.load = function() {
+        this.select(this._stored);
+    };
+    
     /** Selected the specified range
      * @param start Start character
      * @param end End character
      */
     this.select = function(start, end) {
+        // using the object from get
+        if (typeof start.start !== 'undefined') {
+            end = start.end;
+            start = start.start;
+        }
         if (typeof elem.setSelectionRange !== 'undefined') {
             elem.focus();
             elem.setSelectionRange(start, end);
