@@ -42,7 +42,7 @@
 		var dialogOptions = {
 			autoOpen: true,
 			modal: true,
-			title: 'Enter your image',
+			title: 'Select an image',
 			buttons: {
 				"OK": function() {
 					$('input', $body).removeClass('ui-state-error');

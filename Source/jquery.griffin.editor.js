@@ -67,7 +67,32 @@ String.prototype.capitalize = function(){
             }
             
             options.success({ url: options.url, title: options.title});
-        } 
+        },
+        
+        highlighter: function(inlineSelector, blockSelector) {
+            if (window['prettyPrintOne']) {
+                // uses google.prettify
+                var a = false;
+                blockSelector.parent().each(function() {
+                    if (!$(this).hasClass("prettyprint")) 
+                    {
+                        $(this).addClass("prettyprint");
+                        a = true
+                    }
+                });
+                
+                if (a) { 
+                    prettyPrint(); 
+                }
+            } else if (typeof hljs !== 'undefined') {
+                //uses highlight.js
+                hljs.tabReplace = '    ';
+                blockSelector.each(function() {
+                    hljs.highlightBlock(this, null, false);
+                });
+            }
+        }
+        
     };
 
     //globals
@@ -83,6 +108,7 @@ String.prototype.capitalize = function(){
         init: function(options) {
             var settings = $.extend({
                 textHandler: $.griffinEditorExtension.textHandler,
+                highlighter: $.griffinEditorExtension.highlighter,
                 autoSize: true
             }, options);
 
@@ -136,25 +162,12 @@ String.prototype.capitalize = function(){
                     }
                     
                     data.options.textHandler.preview(self, data.preview, data.editor.val());
-                    
-                    // no code highlighter.
-                    if (typeof hljs === 'undefined') {
-                        return this;
-                    }
-                        
                     var timer = $(this).data('editor-timer');
                     if (typeof timer !== 'undefined') {
                         clearTimeout(timer);
                     }
                     timer = setTimeout(function() {
-                        
-                        hljs.tabReplace = '    ';
-                        var text = $("code", data.preview).html();
-                        if (text === null) {
-                            return;
-                        }
-                        var result = hljs.highlightAuto(text);
-                        $('code', data.preview).html(result.value);
+                        data.options.highlighter($('code:not(pre code)', data.preview), $('pre > code', data.preview));
                     }, 1000);
                     $(this).data('editor-timer', timer);
 
