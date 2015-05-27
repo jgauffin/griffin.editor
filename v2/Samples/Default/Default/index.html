@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>TypeScript HTML App</title>
+    <link rel="stylesheet" href="css/prism.css" type="text/css" />
+    <style type="text/css">
+        #editor {
+            width: 50%;
+            padding-left: 20px;
+            margin-top: 20px;
+            float: left;
+        }
+
+            #editor .area {
+                max-width: 100%;
+                width: 100%;
+                height: 400px;
+                margin-right: 10px;
+            }
+
+            #editor .toolbar {
+                padding: 0;
+            }
+
+        #editor-preview {
+            margin-top: 20px;
+            max-width: 60%;
+            margin-left: 10px;
+            width: 45%;
+            float: left;
+            text-align: left;
+            padding-left: 10px;
+            background-color: aliceblue;
+            height: 100%;
+        }
+    </style>
+
+</head>
+<body>
+    <h1>Editor sample</h1>
+   
+
+    <div id="editor">
+        <div class="toolbar">
+            <span class="button-h1" accesskey="1" title="Heading 1"><img src="images/h1.png" /></span>
+            <span class="button-h2" accesskey="2" title="Heading 2"><img src="images/h2.png" /></span>
+            <span class="button-h3" accesskey="3" title="Heading 3"><img src="images/h3.png" /></span>
+            <span class="button-bold" accesskey="b" title="Bold text"><img src="images/bold.png" /></span>
+            <span class="button-italic" accesskey="i" title="Italic text"><img src="images/italic.png" /></span>
+            <span class="divider">&nbsp;</span>
+            <span class="button-bullets" accesskey="l" title="Bullet List"><img src="images/bullets.png" /></span>
+            <span class="button-numbers" accesskey="n" title="Ordered list"><img src="images/numbers.png" /></span>
+            <span class="divider">&nbsp;</span>
+            <span class="button-sourcecode" accesskey="k" title="Source code"><img src="images/source_code.png" /></span>
+            <span class="button-quote" accesskey="q" title="Qoutation"><img src="images/document_quote.png" /></span>
+            <span class="divider">&nbsp;</span>
+            <span class="button-link" accesskey="l" title="Insert link"><img src="images/link.png" /></span>
+            <span class="button-image" accesskey="p" title="Insert picture/image"><img src="images/picture.png" /></span>
+        </div>
+        <textarea class="area"># Hello World!</textarea><br />
+    </div>
+    <div id="editor-preview">
+        PREVIEW!
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="modal fade" id="editor-imageDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Image selection</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        Image URL<br />
+                        <input type="text" name="imageUrl" /><br />
+                    </div>
+                    <div>
+                        Caption<br />
+                        <input type="text" name="imageCaption" /><br />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-success="true">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editor-linkDialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Link dialog</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        URL<br />
+                        <input type="text" name="linkUrl" /><br />
+                    </div>
+                    <div>
+                        Link text<br />
+                        <input type="text" name="linkText" /><br />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-success="true">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="Scripts/jquery-2.1.4.min.js"></script>
+    <script src="Scripts/GriffinEditor.js"></script>
+    <script src="Scripts/prism.js" data-manual></script>
+    <script src="Scripts/marked.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            marked.setOptions({
+                renderer: new marked.Renderer(),
+                gfm: true,
+                tables: true,
+                breaks: false,
+                pedantic: false,
+                sanitize: true,
+                smartLists: true,
+                smartypants: false
+            });
+
+            var textParser = {
+                parse: function (text) {
+                    return marked(text);
+                }
+            }
+            var prismHighlighter = {
+                highlight: function (blockElements, inlineElements) {
+                    blockElements.forEach(function(item) {
+                        Prism.highlightElement(item);
+                    });
+                    
+                }
+            };
+            var editor = new Griffin.Editor('editor', textParser);
+            editor.syntaxHighlighter = prismHighlighter;
+            editor.preview();
+        });
+    </script>
+    
+</body>
+</html>
