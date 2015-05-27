@@ -5,6 +5,8 @@ A TextArea editor with minimal configuration. v2 is work in progress.
 
 ***Written in typescript***
 
+![](screenshot.png)
+
 Current features
 ----------------
 
@@ -24,7 +26,7 @@ Installation
 Example setup
 --------------
 
-1. Add the required HTML
+Step 1. Add the required HTML
 
 ```html
 <div id="editor">
@@ -48,7 +50,7 @@ Example setup
 </div>
 ```
 
-2. Load the script
+Step 2. Load the script
 
 ```html
 <script src="Scripts/GriffinEditor.js"></script>
@@ -66,7 +68,7 @@ Example setup
 </script>
 ```
 
-3. To activate syntax highlighting:
+Step 3. To activate syntax highlighting:
 
 ```html
 <script src="Scripts/GriffinEditor.js"></script>
