@@ -71,13 +71,13 @@ var Griffin;
             if (!this.autoSize) {
                 return;
             }
-            var twin = $(this).data('twin-area');
-            if (typeof twin === 'undefined') {
-                twin = $('<textarea style="position:absolute; top: -10000px"></textarea>');
-                twin.appendTo('body');
+            var twin = $(this).data("twin-area");
+            if (typeof twin === "undefined") {
+                twin = $("<textarea style=\"position:absolute; top: -10000px\"></textarea>");
+                twin.appendTo("body");
                 //div.appendTo('body');
-                $(this).data('twin-area', twin);
-                $(this).data('originalSize', {
+                $(this).data("twin-area", twin);
+                $(this).data("originalSize", {
                     width: this.element.clientWidth,
                     height: this.element.clientHeight,
                     //position: data.editor.css('position'), 
@@ -85,19 +85,20 @@ var Griffin;
                     left: this.getLeftPos(this.element)
                 });
             }
-            twin.css('height', this.element.clientHeight);
-            twin.css('width', this.element.clientWidth);
-            twin.html(this.element.getAttribute('value') + 'some\r\nmore\r\n');
+            // ReSharper disable once QualifiedExpressionMaybeNull
+            twin.css("height", this.element.clientHeight);
+            twin.css("width", this.element.clientWidth);
+            twin.html(this.element.getAttribute("value") + "some\r\nmore\r\n");
             if (twin[0].clientHeight < twin[0].scrollHeight) {
                 var style = {
-                    height: (this.element.clientHeight + 100) + 'px',
+                    height: (this.element.clientHeight + 100) + "px",
                     width: this.element.clientWidth,
                     //position: 'absolute', 
                     top: this.getTopPos(this.element),
                     left: this.getLeftPos(this.element)
                 };
                 $(this.element).css(style);
-                $(this).data('expandedSize', style);
+                $(this).data("expandedSize", style);
             }
         };
         Editor.prototype.bindEvents = function () {
@@ -107,17 +108,17 @@ var Griffin;
         };
         Editor.prototype.bindEditorEvents = function () {
             var self = this;
-            this.element.addEventListener('focus', function (e) {
+            this.element.addEventListener("focus", function () {
                 //grow editor
             });
-            this.element.addEventListener('blur', function (e) {
+            this.element.addEventListener("blur", function () {
                 //shrink editor
             });
-            this.element.addEventListener('keyup', function (e) {
+            this.element.addEventListener("keyup", function () {
                 self.preview();
                 //self.invokeAutoSize();
             });
-            this.element.addEventListener('paste', function (e) {
+            this.element.addEventListener("paste", function () {
                 setTimeout(function () {
                     self.preview();
                 }, 100);
@@ -129,12 +130,12 @@ var Griffin;
             var len = spans.length;
             var self = this;
             for (var i = 0; i < len; i++) {
-                if (spans[i].className.indexOf('button') === -1)
+                if (spans[i].className.indexOf("button") === -1)
                     continue;
                 var button = spans[i];
-                button.addEventListener('click', function (e) {
+                button.addEventListener("click", function (e) {
                     var btn = e.target;
-                    if (btn.tagName != 'span') {
+                    if (btn.tagName !== "span") {
                         btn = e.target.parentElement;
                     }
                     var actionName = self.getActionNameFromClass(btn.className);
@@ -148,7 +149,7 @@ var Griffin;
             var _this = this;
             var self = this;
             //required to override browser keys
-            document.addEventListener('keydown', function (e) {
+            document.addEventListener("keydown", function (e) {
                 if (!e.ctrlKey)
                     return;
                 var key = String.fromCharCode(e.which);
@@ -391,6 +392,8 @@ var Griffin;
                 ;
                 var xStart = selection.get().start;
                 var found = false;
+                //find beginning of line so that we can check
+                //if the text already exists.
                 while (xStart > 0) {
                     var ch = text.substr(xStart, 1);
                     if (ch === '\r' || ch === '\n') {
@@ -421,7 +424,8 @@ var Griffin;
                 return;
             }
             var pos = selection.get();
-            selection.replace(textToAdd + selection.text());
+            var newText = textToAdd + selection.text();
+            selection.replace(newText);
             selection.select(pos.end + textToAdd.length, pos.end + textToAdd.length);
         };
         MarkdownToolbar.prototype.actionH1 = function (selection) {
@@ -556,22 +560,55 @@ var Griffin;
                     length: this.element.selectionEnd - this.element.selectionStart
                 };
             }
-            var range = document.selection.createRange();
-            var storedRange = range.duplicate();
-            storedRange.moveToElementText(this.element);
-            storedRange.setEndPoint('EndToEnd', range);
-            var start = storedRange.text.length - range.text.length;
-            var end = start + range.text.length;
-            return { start: start, end: end, length: range.text.length };
+            var range = document.getSelection().getRangeAt(0);
+            var storedRange = range.cloneRange();
+            storedRange.selectNode(this.element);
+            storedRange.endOffset = this.element.textContent.length;
+            //storedRange.setEndPoint('EndToEnd', range);
+            var start = storedRange.toString().length - range.toString().length;
+            var end = start + range.toString().length;
+            return { start: start, end: end, length: range.toString().length };
         };
         /** Replace selected text with the specified one */
         TextSelector.prototype.replace = function (newText) {
             if (typeof this.element.selectionStart !== 'undefined') {
-                this.element.value = this.element.value.substr(0, this.element.selectionStart) + newText + this.element.value.substr(this.element.selectionEnd);
+                this.element.value = this.element.value.substr(0, this.element.selectionStart)
+                    + newText
+                    + this.element.value.substr(this.element.selectionEnd);
                 return this;
             }
             this.element.focus();
-            document.selection.createRange().text = newText;
+            // Get the first Range (only Firefox supports more than one)
+            var range = window.getSelection().getRangeAt(0);
+            range.deleteContents();
+            var fragment;
+            // Create a DocumentFragment to insert and populate it with HTML
+            // Need to test for the existence of range.createContextualFragment
+            // because it's non-standard and IE 9 does not support it
+            if (range.createContextualFragment) {
+                fragment = range.createContextualFragment(newText);
+            }
+            else {
+                // In IE 9 we need to use innerHTML of a temporary element
+                var div = document.createElement("div"), child;
+                div.innerHTML = newText;
+                fragment = document.createDocumentFragment();
+                while ((child = div.firstChild)) {
+                    fragment.appendChild(child);
+                }
+            }
+            var firstInsertedNode = fragment.firstChild;
+            var lastInsertedNode = fragment.lastChild;
+            range.insertNode(fragment);
+            var selectInserted = false;
+            if (selectInserted) {
+                if (firstInsertedNode) {
+                    range.setStartBefore(firstInsertedNode);
+                    range.setEndAfter(lastInsertedNode);
+                }
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+            }
             return this;
         };
         /** Store current selection */
@@ -615,10 +652,10 @@ var Griffin;
         };
         /** @returns selected text */
         TextSelector.prototype.text = function () {
-            if (typeof document.selection !== 'undefined') {
+            if (typeof document['selection'] !== 'undefined') {
                 //elem.focus();
                 //console.log(document.selection.createRange().text);
-                return document.selection.createRange().text;
+                return document['selection'].createRange().text;
             }
             return this.element.value.substr(this.element.selectionStart, this.element.selectionEnd - this.element.selectionStart);
         };
