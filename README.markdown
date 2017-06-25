@@ -56,7 +56,7 @@ Step 2. Load the script
 <script src="Scripts/GriffinEditor.js"></script>
 <script type="text/javascript">
 	$(function () {
-		//using markedjs, you can easily use your own favorite markdown editor
+		//using markedjs, you can easily use your own favorite markdown parser
 		var textParser = {
 			parse: function (text) {
 				return marked(text);
@@ -74,7 +74,7 @@ Step 3. To activate syntax highlighting:
 <script src="Scripts/GriffinEditor.js"></script>
 <script type="text/javascript">
 	$(function () {
-		//using markedjs, you can easily use your own favorite markdown editor
+		//using markedjs, you can easily use your own favorite markdown parser
 		var textParser = {
 			parse: function (text) {
 				return marked(text);

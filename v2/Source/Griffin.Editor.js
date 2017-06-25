@@ -11,7 +11,7 @@ var Griffin;
          */
         function Editor(elementOrId, parser) {
             this.keyMap = {};
-            if (typeof elementOrId === 'string') {
+            if (typeof elementOrId === "string") {
                 this.containerElement = document.getElementById(elementOrId);
             }
             else {
@@ -20,33 +20,32 @@ var Griffin;
             this.id = this.containerElement.id;
             var id = this.containerElement.id;
             this.element = (this.containerElement.getElementsByTagName("textarea")[0]);
-            this.previewElement = document.getElementById(id + '-preview');
-            this.toolbarElement = this.containerElement.getElementsByClassName('toolbar')[0];
+            this.previewElement = document.getElementById(id + "-preview");
+            this.toolbarElement = this.containerElement.getElementsByClassName("toolbar")[0];
             this.textSelector = new TextSelector(this.element);
             this.toolbarHandler = new MarkdownToolbar(parser);
             this.assignAccessKeys();
-            if (typeof $().modal == 'function') {
+            if (typeof $().modal == "function") {
                 this.dialogProvider = new BoostrapDialogs();
             }
             else {
                 this.dialogProvider = new ConfirmDialogs();
-                document.getElementById(id + '-imageDialog').style.display = "none";
-                document.getElementById(id + '-linkDialog').style.display = "none";
+                document.getElementById(id + "-imageDialog").style.display = "none";
+                document.getElementById(id + "-linkDialog").style.display = "none";
             }
             this.bindEvents();
         }
         Editor.prototype.trimSpaceInSelection = function () {
-            console.log('editor', this);
             var selectedText = this.textSelector.text();
             var pos = this.textSelector.get();
-            if (selectedText.substr(selectedText.length - 1, 1) === ' ') {
+            if (selectedText.substr(selectedText.length - 1, 1) === " ") {
                 this.textSelector.select(pos.start, pos.end - 1);
             }
         };
         Editor.prototype.getActionNameFromClass = function (classString) {
             var classNames = classString.split(/\s+/);
             for (var i = 0; i < classNames.length; i++) {
-                if (classNames[i].substr(0, 7) === 'button-') {
+                if (classNames[i].substr(0, 7) === "button-") {
                     return classNames[i].substr(7);
                 }
             }
@@ -61,9 +60,9 @@ var Griffin;
                     continue;
                 var button = spans[i];
                 var title = button.getAttribute("title");
-                var key = button.getAttribute('accesskey').toUpperCase();
+                var key = button.getAttribute("accesskey").toUpperCase();
                 var actionName = self.getActionNameFromClass(button.className);
-                button.setAttribute('title', title + ' [CTRL+' + key + ']');
+                button.setAttribute("title", title + " [CTRL+" + key + "]");
                 this.keyMap[key] = actionName;
             }
         };
@@ -71,13 +70,14 @@ var Griffin;
             if (!this.autoSize) {
                 return;
             }
-            var twin = $(this).data('twin-area');
-            if (typeof twin === 'undefined') {
+            var twin = $(this).data("twin-area");
+            if (typeof twin === "undefined") {
                 twin = $('<textarea style="position:absolute; top: -10000px"></textarea>');
-                twin.appendTo('body');
+                twin.appendTo("body");
                 //div.appendTo('body');
-                $(this).data('twin-area', twin);
-                $(this).data('originalSize', {
+                $(this).data("twin-area", twin);
+                $(this)
+                    .data("originalSize", {
                     width: this.element.clientWidth,
                     height: this.element.clientHeight,
                     //position: data.editor.css('position'), 
@@ -85,19 +85,20 @@ var Griffin;
                     left: this.getLeftPos(this.element)
                 });
             }
-            twin.css('height', this.element.clientHeight);
-            twin.css('width', this.element.clientWidth);
-            twin.html(this.element.getAttribute('value') + 'some\r\nmore\r\n');
+            twin.css("height", this.element.clientHeight);
+            twin.css("width", this.element.clientWidth);
+            twin.html(this.element.getAttribute("value") + "some\r\nmore\r\n");
             if (twin[0].clientHeight < twin[0].scrollHeight) {
                 var style = {
-                    height: (this.element.clientHeight + 100) + 'px',
+                    height: (this.element.clientHeight + 100) + "px",
                     width: this.element.clientWidth,
                     //position: 'absolute', 
                     top: this.getTopPos(this.element),
                     left: this.getLeftPos(this.element)
+                    //zindex: 99
                 };
                 $(this.element).css(style);
-                $(this).data('expandedSize', style);
+                $(this).data("expandedSize", style);
             }
         };
         Editor.prototype.bindEvents = function () {
@@ -107,17 +108,17 @@ var Griffin;
         };
         Editor.prototype.bindEditorEvents = function () {
             var self = this;
-            this.element.addEventListener('focus', function (e) {
+            this.element.addEventListener("focus", function (e) {
                 //grow editor
             });
-            this.element.addEventListener('blur', function (e) {
+            this.element.addEventListener("blur", function (e) {
                 //shrink editor
             });
-            this.element.addEventListener('keyup', function (e) {
+            this.element.addEventListener("keyup", function (e) {
                 self.preview();
                 //self.invokeAutoSize();
             });
-            this.element.addEventListener('paste', function (e) {
+            this.element.addEventListener("paste", function (e) {
                 setTimeout(function () {
                     self.preview();
                 }, 100);
@@ -129,12 +130,12 @@ var Griffin;
             var len = spans.length;
             var self = this;
             for (var i = 0; i < len; i++) {
-                if (spans[i].className.indexOf('button') === -1)
+                if (spans[i].className.indexOf("button") === -1)
                     continue;
                 var button = spans[i];
-                button.addEventListener('click', function (e) {
+                button.addEventListener("click", function (e) {
                     var btn = e.target;
-                    if (btn.tagName != 'span') {
+                    if (btn.tagName != "span") {
                         btn = e.target.parentElement;
                     }
                     var actionName = self.getActionNameFromClass(btn.className);
@@ -148,7 +149,7 @@ var Griffin;
             var _this = this;
             var self = this;
             //required to override browser keys
-            document.addEventListener('keydown', function (e) {
+            document.addEventListener("keydown", function (e) {
                 if (!e.ctrlKey)
                     return;
                 var key = String.fromCharCode(e.which);
@@ -163,7 +164,7 @@ var Griffin;
                     e.preventDefault();
                 }
             });
-            this.element.addEventListener('keyup', function (e) {
+            this.element.addEventListener("keyup", function (e) {
                 if (!e.ctrlKey)
                     return;
                 var key = String.fromCharCode(e.which);
@@ -192,10 +193,14 @@ var Griffin;
             });
         };
         Editor.prototype.getTopPos = function (element) {
-            return element.getBoundingClientRect().top + window.pageYOffset - element.ownerDocument.documentElement.clientTop;
+            return element.getBoundingClientRect().top +
+                window.pageYOffset -
+                element.ownerDocument.documentElement.clientTop;
         };
         Editor.prototype.getLeftPos = function (element) {
-            return element.getBoundingClientRect().left + window.pageXOffset - element.ownerDocument.documentElement.clientLeft;
+            return element.getBoundingClientRect().left +
+                window.pageXOffset -
+                element.ownerDocument.documentElement.clientLeft;
         };
         /**
          * Update the preview window
@@ -216,7 +221,7 @@ var Griffin;
                     var codeBlocks = [];
                     for (var i = 0; i < tags.length; i++) {
                         var elem = tags[i];
-                        if (elem.parentElement.tagName === 'PRE') {
+                        if (elem.parentElement.tagName === "PRE") {
                             codeBlocks.push(elem);
                         }
                         else {
@@ -228,7 +233,7 @@ var Griffin;
             }
         };
         return Editor;
-    })();
+    }());
     Griffin.Editor = Editor;
     var ConfirmDialogs = (function () {
         function ConfirmDialogs() {
@@ -252,17 +257,18 @@ var Griffin;
             });
         };
         return ConfirmDialogs;
-    })();
+    }());
     Griffin.ConfirmDialogs = ConfirmDialogs;
     var BoostrapDialogs = (function () {
         function BoostrapDialogs() {
         }
         BoostrapDialogs.prototype.image = function (context, callback) {
-            var dialog = $('#' + context.editor.id + "-imageDialog");
-            if (!dialog.data('griffin-imageDialog-inited')) {
-                dialog.data('griffin-imageDialog-inited', true);
-                $('[data-success]', dialog).click(function () {
-                    dialog.modal('hide');
+            var dialog = $("#" + context.editor.id + "-imageDialog");
+            if (!dialog.data("griffin-imageDialog-inited")) {
+                dialog.data("griffin-imageDialog-inited", true);
+                $("[data-success]", dialog)
+                    .click(function () {
+                    dialog.modal("hide");
                     callback({
                         href: $('[name="imageUrl"]', dialog).val(),
                         title: $('[name="imageCaption"]', dialog).val()
@@ -273,7 +279,7 @@ var Griffin;
             if (context.selection.isSelected()) {
                 $('[name="imageCaption"]', dialog).val(context.selection.text());
             }
-            dialog.on('shown.bs.modal', function () {
+            dialog.on("shown.bs.modal", function () {
                 $('[name="imageUrl"]', dialog).focus();
             });
             dialog.modal({
@@ -281,21 +287,22 @@ var Griffin;
             });
         };
         BoostrapDialogs.prototype.link = function (context, callback) {
-            var dialog = $('#' + context.editor.id + "-linkDialog");
-            if (!dialog.data('griffin-linkDialog-inited')) {
-                dialog.data('griffin-linkDialog-inited', true);
-                $('[data-success]', dialog).click(function () {
-                    dialog.modal('hide');
+            var dialog = $("#" + context.editor.id + "-linkDialog");
+            if (!dialog.data("griffin-linkDialog-inited")) {
+                dialog.data("griffin-linkDialog-inited", true);
+                $("[data-success]", dialog)
+                    .click(function () {
+                    dialog.modal("hide");
                     callback({
                         url: $('[name="linkUrl"]', dialog).val(),
                         text: $('[name="linkText"]', dialog).val()
                     });
                     context.editorElement.focus();
                 });
-                dialog.on('shown.bs.modal', function () {
+                dialog.on("shown.bs.modal", function () {
                     $('[name="linkUrl"]', dialog).focus();
                 });
-                dialog.on('hidden.bs.modal', function () {
+                dialog.on("hidden.bs.modal", function () {
                     context.editorElement.focus();
                 });
             }
@@ -307,7 +314,7 @@ var Griffin;
             });
         };
         return BoostrapDialogs;
-    })();
+    }());
     Griffin.BoostrapDialogs = BoostrapDialogs;
     var MarkdownToolbar = (function () {
         function MarkdownToolbar(parser) {
@@ -315,23 +322,24 @@ var Griffin;
         }
         MarkdownToolbar.prototype.invokeAction = function (context) {
             //			console.log(griffinEditor);
-            var method = 'action' + context.actionName.substr(0, 1).toUpperCase() + context.actionName.substr(1);
-            if (this[method]) {
+            var methodName = "action" + context.actionName.substr(0, 1).toUpperCase() + context.actionName.substr(1);
+            if (this[methodName]) {
                 var args = [];
                 args[0] = context.selection;
                 args[1] = context;
-                return this[method].apply(this, args);
+                var method = this[methodName];
+                return method.apply(this, args);
             }
             else {
-                if (typeof alert !== 'undefined') {
-                    alert('Missing ' + method + ' in the active textHandler (griffinEditorExtension)');
+                if (typeof alert !== "undefined") {
+                    alert("Missing " + methodName + " in the active textHandler (griffinEditorExtension)");
                 }
             }
             return this;
         };
         MarkdownToolbar.prototype.preview = function (editor, preview, contents) {
-            if (contents === null || typeof contents === 'undefined') {
-                throw new Error('May not be called without actual content.');
+            if (contents === null || typeof contents === "undefined") {
+                throw new Error("May not be called without actual content.");
             }
             preview.innerHTML = this.parser.parse(contents);
         };
@@ -356,7 +364,7 @@ var Griffin;
         MarkdownToolbar.prototype.actionBold = function (selection) {
             var isSelected = selection.isSelected();
             var pos = selection.get();
-            if (this.removeWrapping(selection, '**')) {
+            if (this.removeWrapping(selection, "**")) {
                 return this;
             }
             selection.replace("**" + selection.text() + "**");
@@ -371,7 +379,7 @@ var Griffin;
         MarkdownToolbar.prototype.actionItalic = function (selection) {
             var isSelected = selection.isSelected();
             var pos = selection.get();
-            if (this.removeWrapping(selection, '_')) {
+            if (this.removeWrapping(selection, "_")) {
                 return this;
             }
             selection.replace("_" + selection.text() + "_");
@@ -388,17 +396,20 @@ var Griffin;
             if (!isSelected) {
                 var text = selection.element.value;
                 var orgPos = selection.get().start;
-                ;
                 var xStart = selection.get().start;
+                console.log(orgPos, text.substr(xStart));
                 var found = false;
+                //find beginning of line so that we can check
+                //if the text already exists.
                 while (xStart > 0) {
                     var ch = text.substr(xStart, 1);
-                    if (ch === '\r' || ch === '\n') {
+                    if (ch === "\r" || ch === "\n") {
                         if (text.substr(xStart + 1, textToAdd.length) === textToAdd) {
-                            selection.select(xStart + 1, textToAdd.length);
-                            selection.replace('');
+                            selection.select(xStart + 1, xStart + 1 + textToAdd.length);
+                            selection.replace("");
                         }
                         else {
+                            selection.select(xStart + 1, xStart + 1);
                             selection.replace(textToAdd);
                         }
                         found = true;
@@ -409,7 +420,7 @@ var Griffin;
                 if (!found) {
                     if (text.substr(0, textToAdd.length) === textToAdd) {
                         selection.select(0, textToAdd.length);
-                        selection.replace('');
+                        selection.replace("");
                     }
                     else {
                         selection.select(0, 0);
@@ -425,13 +436,13 @@ var Griffin;
             selection.select(pos.end + textToAdd.length, pos.end + textToAdd.length);
         };
         MarkdownToolbar.prototype.actionH1 = function (selection) {
-            this.addTextToBeginningOfLine(selection, '# ');
+            this.addTextToBeginningOfLine(selection, "# ");
         };
         MarkdownToolbar.prototype.actionH2 = function (selection) {
-            this.addTextToBeginningOfLine(selection, '## ');
+            this.addTextToBeginningOfLine(selection, "## ");
         };
         MarkdownToolbar.prototype.actionH3 = function (selection) {
-            this.addTextToBeginningOfLine(selection, '### ');
+            this.addTextToBeginningOfLine(selection, "### ");
         };
         MarkdownToolbar.prototype.actionBullets = function (selection) {
             var pos = selection.get();
@@ -439,22 +450,22 @@ var Griffin;
             selection.select(pos.end + 2, pos.end + 2);
         };
         MarkdownToolbar.prototype.actionNumbers = function (selection) {
-            this.addTextToBeginningOfLine(selection, '1. ');
+            this.addTextToBeginningOfLine(selection, "1. ");
         };
         MarkdownToolbar.prototype.actionSourcecode = function (selection) {
             var pos = selection.get();
             if (!selection.isSelected()) {
-                selection.replace('> ');
+                selection.replace("    ");
                 selection.select(pos.start + 2, pos.start + 2);
                 return;
             }
-            if (selection.text().indexOf('\n') === -1) {
-                selection.replace('`' + selection.text() + '`');
+            if (selection.text().indexOf("\n") === -1) {
+                selection.replace("`" + selection.text() + "`");
                 selection.select(pos.end + 2, pos.end + 2);
                 return;
             }
-            var text = '    ' + selection.text().replace(/\n/g, '\n    ');
-            if (text.substr(text.length - 3, 1) === ' ' && text.substr(text.length - 1, 1) === ' ') {
+            var text = "    " + selection.text().replace(/\n/g, "\n    ");
+            if (text.substr(text.length - 3, 1) === " " && text.substr(text.length - 1, 1) === " ") {
                 text = text.substr(0, text.length - 4);
             }
             selection.replace(text);
@@ -463,12 +474,12 @@ var Griffin;
         MarkdownToolbar.prototype.actionQuote = function (selection) {
             var pos = selection.get();
             if (!selection.isSelected()) {
-                selection.replace('> ');
+                selection.replace("> ");
                 selection.select(pos.start + 2, pos.start + 2);
                 return;
             }
-            var text = '> ' + selection.text().replace(/\n/g, '\n> ');
-            if (text.substr(text.length - 3, 1) === ' ') {
+            var text = "> " + selection.text().replace(/\n/g, "\n> ");
+            if (text.substr(text.length - 3, 1) === " ") {
                 text = text.substr(0, text.length - 4);
             }
             selection.replace(text);
@@ -483,21 +494,25 @@ var Griffin;
                 editor: context.editor,
                 editorElement: context.editorElement,
                 selection: selection,
-                href: '',
-                title: ''
+                href: "",
+                title: ""
             };
             if (!selection.isSelected()) {
-                options.href = '';
-                options.title = '';
+                options.href = "";
+                options.title = "";
             }
-            else if (text.substr(-4, 4) === '.png' || text.substr(-4, 4) === '.gif' || text.substr(-4, 4) === '.jpg') {
+            else if (text
+                .substr(-4, 4) ===
+                ".png" ||
+                text.substr(-4, 4) === ".gif" ||
+                text.substr(-4, 4) === ".jpg") {
                 options.href = text;
             }
             else {
                 options.title = text;
             }
             context.editor.dialogProvider.image(options, function (result) {
-                var newText = '![' + result.title + '](' + result.href + ')';
+                var newText = "![" + result.title + "](" + result.href + ")";
                 selection.load();
                 selection.replace(newText);
                 selection.select(pos.start + newText.length, pos.start + newText.length);
@@ -512,11 +527,11 @@ var Griffin;
                 editor: context.editor,
                 editorElement: context.editorElement,
                 selection: selection,
-                url: '',
-                text: ''
+                url: "",
+                text: ""
             };
             if (selection.isSelected()) {
-                if (text.substr(0, 4) === 'http' || text.substr(0, 3) === 'www') {
+                if (text.substr(0, 4) === "http" || text.substr(0, 3) === "www") {
                     options.url = text;
                 }
                 else {
@@ -525,18 +540,18 @@ var Griffin;
             }
             context.editor.dialogProvider.link(options, function (result) {
                 selection.load();
-                var newText = '[' + result.text + '](' + result.url + ')';
+                var newText = "[" + result.text + "](" + result.url + ")";
                 selection.replace(newText);
                 selection.select(pos.start + newText.length, pos.start + newText.length);
                 context.editor.preview();
             });
         };
         return MarkdownToolbar;
-    })();
+    }());
     Griffin.MarkdownToolbar = MarkdownToolbar;
     var TextSelector = (function () {
         function TextSelector(elementOrId) {
-            if (typeof elementOrId === 'string') {
+            if (typeof elementOrId === "string") {
                 this.element = document.getElementById(elementOrId);
             }
             else {
@@ -549,30 +564,31 @@ var Griffin;
           * length: number of selected characters
           */
         TextSelector.prototype.get = function () {
-            if (typeof this.element.selectionStart !== 'undefined') {
+            if (typeof this.element.selectionStart !== "undefined") {
                 return {
                     start: this.element.selectionStart,
                     end: this.element.selectionEnd,
                     length: this.element.selectionEnd - this.element.selectionStart
                 };
             }
-            var range = document.selection.createRange();
+            var doc = document;
+            var range = doc.selection.createRange();
             var storedRange = range.duplicate();
             storedRange.moveToElementText(this.element);
-            storedRange.setEndPoint('EndToEnd', range);
+            storedRange.setEndPoint("EndToEnd", range);
             var start = storedRange.text.length - range.text.length;
             var end = start + range.text.length;
             return { start: start, end: end, length: range.text.length };
         };
         /** Replace selected text with the specified one */
         TextSelector.prototype.replace = function (newText) {
-            if (typeof this.element.selectionStart !== 'undefined') {
-                this.element.value = this.element.value.substr(0, this.element.selectionStart) + newText + this.element.value.substr(this.element.selectionEnd);
+            if (typeof this.element.selectionStart !== "undefined") {
+                this.element.value = this.element.value.substr(0, this.element.selectionStart) +
+                    newText +
+                    this.element.value.substr(this.element.selectionEnd);
                 return this;
             }
-            this.element.focus();
-            document.selection.createRange().text = newText;
-            return this;
+            throw new Error("Selection not supported.");
         };
         /** Store current selection */
         TextSelector.prototype.store = function () {
@@ -588,7 +604,7 @@ var Griffin;
          */
         TextSelector.prototype.select = function (startOrSelection, end) {
             var start = startOrSelection;
-            if (typeof startOrSelection.start !== 'undefined') {
+            if (typeof startOrSelection.start !== "undefined") {
                 end = startOrSelection.end;
                 start = startOrSelection.start;
             }
@@ -596,16 +612,12 @@ var Griffin;
                 this.element.selectionStart = start;
                 this.element.selectionEnd = end;
             }
-            else if (typeof this.element.setSelectionRange !== 'undefined') {
+            else if (typeof this.element.setSelectionRange !== "undefined") {
                 this.element.focus();
                 this.element.setSelectionRange(start, end);
             }
-            else if (typeof this.element.createTextRange !== 'undefined') {
-                var range = this.element.createTextRange();
-                range.collapse(true);
-                range.moveEnd('character', end);
-                range.moveStart('character', start);
-                range.select();
+            else {
+                throw new Error("Selection not supported.");
             }
             return this;
         };
@@ -615,30 +627,22 @@ var Griffin;
         };
         /** @returns selected text */
         TextSelector.prototype.text = function () {
-            if (typeof document.selection !== 'undefined') {
-                //elem.focus();
-                //console.log(document.selection.createRange().text);
-                return document.selection.createRange().text;
-            }
             return this.element.value.substr(this.element.selectionStart, this.element.selectionEnd - this.element.selectionStart);
         };
         TextSelector.prototype.moveCursor = function (position) {
             if (typeof this.element.selectionStart == "number") {
                 this.element.selectionStart = position;
             }
-            else if (typeof this.element.setSelectionRange !== 'undefined') {
+            else if (typeof this.element.setSelectionRange !== "undefined") {
                 this.element.focus();
                 this.element.setSelectionRange(position, 0);
             }
-            else if (typeof this.element.createTextRange !== 'undefined') {
-                var range = this.element.createTextRange();
-                range.collapse(true);
-                range.moveStart('character', position);
-                range.select();
+            else {
+                throw new Error("Selection not supported.");
             }
         };
         return TextSelector;
-    })();
+    }());
     Griffin.TextSelector = TextSelector;
 })(Griffin || (Griffin = {}));
-//# sourceMappingURL=GriffinEditor.js.map
+//# sourceMappingURL=Griffin.Editor.js.map

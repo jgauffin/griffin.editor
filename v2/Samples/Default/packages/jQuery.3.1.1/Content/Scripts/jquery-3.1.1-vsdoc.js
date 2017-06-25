@@ -4,11 +4,11 @@
 * intended to be used only for design-time IntelliSense.  Please use the
 * standard jQuery library for all runtime use.
 *
-* Comment version: 2.1.4
+* Comment version: 3.1.1
 */
 
 /*!
-* jQuery JavaScript Library v2.1.4
+* jQuery JavaScript Library v3.1.1
 * http://jquery.com/
 *
 * Includes Sizzle.js
@@ -981,7 +981,7 @@
         }
     };
     jQuery.ajaxSettings = {
-        "url": 'http://localhost:25812/?ver=2.1.4&newLineMethod=xml',
+        "url": 'http://localhost:25812/?ver=3.1.0&newLineMethod=xml',
         "type": 'GET',
         "isLocal": false,
         "global": true,
@@ -1722,7 +1722,7 @@
         return select(selector.replace(rtrim, "$1"), context, results, seed);
     };
     jQuery.fn = {
-        "jquery": '2.1.4',
+        "jquery": '3.1.1',
         "selector": '',
         "length": 0
     };
