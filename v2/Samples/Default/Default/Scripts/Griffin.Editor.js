@@ -72,7 +72,7 @@ var Griffin;
             }
             var twin = $(this).data("twin-area");
             if (typeof twin === "undefined") {
-                twin = $('<textarea style="position:absolute; top: -10000px"></textarea>');
+                twin = $("<textarea style=\"position:absolute; top: -10000px\"></textarea>");
                 twin.appendTo("body");
                 //div.appendTo('body');
                 $(this).data("twin-area", twin);
@@ -135,7 +135,7 @@ var Griffin;
                 var button = spans[i];
                 button.addEventListener("click", function (e) {
                     var btn = e.target;
-                    if (btn.tagName != "span") {
+                    if (btn.tagName !== "span") {
                         btn = e.target.parentElement;
                     }
                     var actionName = self.getActionNameFromClass(btn.className);
@@ -432,7 +432,8 @@ var Griffin;
                 return;
             }
             var pos = selection.get();
-            selection.replace(textToAdd + selection.text());
+            var newText = textToAdd + selection.text();
+            selection.replace(newText);
             selection.select(pos.end + textToAdd.length, pos.end + textToAdd.length);
         };
         MarkdownToolbar.prototype.actionH1 = function (selection) {
@@ -455,7 +456,7 @@ var Griffin;
         MarkdownToolbar.prototype.actionSourcecode = function (selection) {
             var pos = selection.get();
             if (!selection.isSelected()) {
-                selection.replace("> ");
+                selection.replace("    ");
                 selection.select(pos.start + 2, pos.start + 2);
                 return;
             }
@@ -588,7 +589,50 @@ var Griffin;
                     this.element.value.substr(this.element.selectionEnd);
                 return this;
             }
-            throw new Error("Selection not supported.");
+            //source: https://stackoverflow.com/questions/5393922/javascript-replace-selection-all-browsers
+            if (typeof window.getSelection != "undefined") {
+                // IE 9 and other non-IE browsers
+                var sel = window.getSelection();
+                // Test that the Selection object contains at least one Range
+                if (sel.getRangeAt && sel.rangeCount) {
+                    // Get the first Range (only Firefox supports more than one)
+                    var range = window.getSelection().getRangeAt(0);
+                    range.deleteContents();
+                    // Create a DocumentFragment to insert and populate it with HTML
+                    // Need to test for the existence of range.createContextualFragment
+                    // because it's non-standard and IE 9 does not support it
+                    var fragment = void 0;
+                    if (range.createContextualFragment) {
+                        fragment = range.createContextualFragment(newText);
+                    }
+                    else {
+                        // In IE 9 we need to use innerHTML of a temporary element
+                        var div = document.createElement("div"), child;
+                        div.innerHTML = newText;
+                        fragment = document.createDocumentFragment();
+                        while ((child = div.firstChild)) {
+                            fragment.appendChild(child);
+                        }
+                    }
+                    var firstInsertedNode = fragment.firstChild;
+                    var lastInsertedNode = fragment.lastChild;
+                    range.insertNode(fragment);
+                    //if (selectInserted) {
+                    //    if (firstInsertedNode) {
+                    //        range.setStartBefore(firstInsertedNode);
+                    //        range.setEndAfter(lastInsertedNode);
+                    //    }
+                    //    sel.removeAllRanges();
+                    //    sel.addRange(range);
+                    //}
+                }
+            }
+            else if (document['selection'] && document['selection'].type !== "Control") {
+                // IE 8 and below
+                var range = document['selection'].createRange();
+                range.pasteHTML(newText);
+            }
+            return this;
         };
         /** Store current selection */
         TextSelector.prototype.store = function () {
@@ -627,6 +671,9 @@ var Griffin;
         };
         /** @returns selected text */
         TextSelector.prototype.text = function () {
+            if (typeof document['selection'] !== 'undefined') {
+                return document['selection'].createRange().text;
+            }
             return this.element.value.substr(this.element.selectionStart, this.element.selectionEnd - this.element.selectionStart);
         };
         TextSelector.prototype.moveCursor = function (position) {

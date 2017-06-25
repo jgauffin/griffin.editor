@@ -171,7 +171,7 @@ module Griffin {
 
             this.id = this.containerElement.id;
             const id = this.containerElement.id;
-            this.element = (this.containerElement.getElementsByTagName("textarea")[0]);
+            this.element = <HTMLTextAreaElement>(this.containerElement.getElementsByTagName("textarea")[0]);
             this.previewElement = document.getElementById(id + "-preview");
             this.toolbarElement = (this.containerElement.getElementsByClassName("toolbar")[0] as HTMLElement);
             this.textSelector = new TextSelector(this.element);
@@ -233,7 +233,7 @@ module Griffin {
 
             let twin = $(this).data("twin-area");
             if (typeof twin === "undefined") {
-                twin = $('<textarea style="position:absolute; top: -10000px"></textarea>');
+                twin = $("<textarea style=\"position:absolute; top: -10000px\"></textarea>");
                 twin.appendTo("body");
                 //div.appendTo('body');
                 $(this).data("twin-area", twin);
@@ -289,10 +289,9 @@ module Griffin {
             this.element.addEventListener("paste",
                 (e: any) => {
                     setTimeout(function () {
-                        self.preview();
-                    },
-                        100);
-                });
+                    self.preview();
+                }, 100);
+            });
         }
 
         private bindToolbarEvents(): void {
@@ -303,17 +302,16 @@ module Griffin {
                 if (spans[i].className.indexOf("button") === -1)
                     continue;
                 const button = spans[i];
-                button.addEventListener("click",
-                    (e: MouseEvent) => {
-                        var btn = e.target as HTMLElement;
-                        if (btn.tagName != "span") {
-                            btn = (e.target as HTMLElement).parentElement;
-                        }
-                        var actionName = self.getActionNameFromClass(btn.className);
-                        self.invokeAction(actionName);
-                        self.preview();
-                        return this;
-                    });
+                button.addEventListener("click", (e: MouseEvent) => {
+                    var btn = <HTMLElement>e.target;
+                    if (btn.tagName !== "span") {
+                        btn = (<HTMLElement>e.target).parentElement;
+                    }
+                    var actionName = self.getActionNameFromClass(btn.className);
+                    self.invokeAction(actionName);
+                    self.preview();
+                    return this;
+                });
             }
         }
 
@@ -410,8 +408,7 @@ module Griffin {
                         }
                     }
                     this.syntaxHighlighter.highlight(inlineBlocks, codeBlocks);
-                },
-                    1000);
+                }, 1000);
             }
         }
 
@@ -639,7 +636,8 @@ module Griffin {
             }
 
             const pos = selection.get();
-            selection.replace(textToAdd + selection.text());
+            var newText = textToAdd + selection.text();
+            selection.replace(newText);
             selection.select(pos.end + textToAdd.length, pos.end + textToAdd.length);
         }
 
@@ -786,6 +784,7 @@ module Griffin {
             }
         }
 
+
         /** @returns object {start: X, end: Y, length: Z} 
           * x = start character
           * y = end character
@@ -813,7 +812,7 @@ module Griffin {
         }
 
         /** Replace selected text with the specified one */
-        replace(newText: string) {
+        replace(newText: string): TextSelector {
             if (typeof this.element.selectionStart !== "undefined") {
                 this.element.value = this.element.value.substr(0, this.element.selectionStart) +
                     newText +
@@ -821,7 +820,53 @@ module Griffin {
                 return this;
             }
 
-            throw new Error("Selection not supported.");
+
+            //source: https://stackoverflow.com/questions/5393922/javascript-replace-selection-all-browsers
+
+            if (typeof window.getSelection != "undefined") {
+                // IE 9 and other non-IE browsers
+                const sel = window.getSelection();
+
+                // Test that the Selection object contains at least one Range
+                if (sel.getRangeAt && sel.rangeCount) {
+                    // Get the first Range (only Firefox supports more than one)
+                    const range = window.getSelection().getRangeAt(0);
+                    range.deleteContents();
+
+                    // Create a DocumentFragment to insert and populate it with HTML
+                    // Need to test for the existence of range.createContextualFragment
+                    // because it's non-standard and IE 9 does not support it
+                    let fragment: DocumentFragment;
+                    if (range.createContextualFragment) {
+                        fragment = range.createContextualFragment(newText);
+                    } else {
+                        // In IE 9 we need to use innerHTML of a temporary element
+                        var div = document.createElement("div"), child;
+                        div.innerHTML = newText;
+                        fragment = document.createDocumentFragment();
+                        while ((child = div.firstChild)) {
+                            fragment.appendChild(child);
+                        }
+                    }
+                    var firstInsertedNode = fragment.firstChild;
+                    var lastInsertedNode = fragment.lastChild;
+                    range.insertNode(fragment);
+                    //if (selectInserted) {
+                    //    if (firstInsertedNode) {
+                    //        range.setStartBefore(firstInsertedNode);
+                    //        range.setEndAfter(lastInsertedNode);
+                    //    }
+                    //    sel.removeAllRanges();
+                    //    sel.addRange(range);
+                    //}
+                }
+            } else if (document['selection'] && document['selection'].type !== "Control") {
+                // IE 8 and below
+                const range = document['selection'].createRange();
+                range.pasteHTML(newText);
+            }
+
+            return this;
         }
 
 
@@ -839,7 +884,7 @@ module Griffin {
          * @param start Start character
          * @param end End character
          */
-        select(startOrSelection: any, end?: number) {
+        select(startOrSelection: any, end?: number):TextSelector {
             let start = startOrSelection;
 
             if (typeof startOrSelection.start !== "undefined") {
@@ -860,14 +905,17 @@ module Griffin {
         }
 
         /** @returns if anything is selected */
-        isSelected() {
+        isSelected():boolean {
             return this.get().length !== 0;
         }
 
         /** @returns selected text */
-        text() {
-            return this.element.value.substr(this.element.selectionStart,
-                this.element.selectionEnd - this.element.selectionStart);
+        text():string {
+            if (typeof document['selection'] !== 'undefined') {
+                return document['selection'].createRange().text;
+            }
+
+            return this.element.value.substr(this.element.selectionStart, this.element.selectionEnd - this.element.selectionStart);
         }
 
         moveCursor(position: number) {
